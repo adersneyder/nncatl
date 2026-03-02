@@ -284,7 +284,7 @@ st.markdown(f"""
 # ==========================================
 # 4. PANELES DE CONTENIDO (4 TABS NUEVOS)
 # ==========================================
-tab1, tab2, tab3, tab4 = st.tabs(["1. Perfil y Riesgos", "2. Análisis Técnico y Beta", "3. Análisis Fundamental", "4. Veredicto de Riesgo"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["1. Perfil y Riesgos", "2. Análisis Técnico y Beta", "3. Análisis Fundamental", "4. Teorías de Divisas", "5. Veredicto de Riesgo"])
 
 # --- TAB 1: PERFIL Y GEOPOLÍTICA ---
 with tab1:
@@ -475,3 +475,4 @@ with tab5:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
