@@ -186,11 +186,12 @@ with tab1:
         st.markdown("""
         <div class="custom-panel">
             <h3>1. Introducción a la Compañía</h3>
-            <p><strong>CATL</strong> es el mayor fabricante mundial de baterías EV. Es proveedor estratégico para Tesla, BMW, y Ford.</p>
+            <p><strong>CATL</strong> es el mayor fabricante de baterías de iones de litio para vehículos eléctricos (EV) del mundo. Con sede en Ningde, China, posee aproximadamente el 37% de la cuota de mercado global. Es un proveedor estratégico para Tesla, BMW, Volkswagen y Ford. </p>
+                <p>Su ventaja competitiva radica en la innovación química (baterías LFP y de iones de sodio) y la integración vertical en la cadena de suministro de minerales críticos.</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
-        st.markdown('<div class="custom-panel"><h3>2. Ingresos (Estático)</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="custom-panel"><h3>2. Distribución de ngresos</h3></div>', unsafe_allow_html=True)
         fig_donut = go.Figure(data=[go.Pie(labels=['Baterías EV', 'Almacenamiento', 'Materiales', 'Otros'], values=[70, 15, 10, 5], hole=.6, marker_colors=['#58a6ff', '#3fb950', '#f85149', '#8b949e'])])
         fig_donut.update_layout(margin=dict(t=10, b=10, l=10, r=10), height=280, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#8b949e'), showlegend=False)
         st.plotly_chart(fig_donut, use_container_width=True)
@@ -198,7 +199,7 @@ with tab1:
         st.markdown("""
         <div class="custom-panel">
             <h3>3. Riesgos Geopolíticos</h3>
-            <ul><li><strong>EE.UU. (IRA):</strong> Restringe subsidios.</li><li><strong>UE (Battery Passport):</strong> Regulaciones de carbono.</li></ul>
+            <ul><li><strong>Un conflicto abierto entre EE.UU. e Irán representa un riesgo bidireccional para CATL. <strong>Amenazas:</strong> Disrupción en rutas marítimas críticas y encarecimiento drástico de los fletes globales, afectando la estructura de costos operativos. <strong>Oportunidades:</strong> Un shock petrolero aceleraría la transición forzosa hacia la movilidad eléctrica, disparando la demanda de sus baterías. Para mitigar la vulnerabilidad de la cadena de suministro en África y Medio Oriente, CATL deberá estrechar urgentemente lazos estratégicos con proveedores de minerales en el Triángulo del Litio y latitudes americanas, garantizando un abastecimiento resiliente.</li></ul>
         </div>
         """, unsafe_allow_html=True)
         
@@ -333,3 +334,4 @@ with tab4:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
