@@ -311,13 +311,7 @@ Poder de negociación frente a OEMs automotrices.
 Participación directa en la cadena de suministro de minerales críticos (litio, níquel, cobalto).
 Reducción de volatilidad de costos y mayor resiliencia ante shocks de commodities.
 
-4. Drivers de Crecimiento
-Expansión global del mercado de vehículos eléctricos.
-Regulaciones ambientales más estrictas en Europa y EE.UU.
-Reducción estructural del costo por kWh.
-Penetración en almacenamiento energético estacionario (BESS).
-
-5. Riesgos Clave (Perspectiva Analista de Riesgo)
+5. Riesgos Clave
 Riesgo geopolítico
 Alta exposición a China.
 Tensiones China–EE.UU. pueden afectar acceso a mercados o tecnología.
@@ -335,7 +329,6 @@ Ventaja en costos.
 Capacidad de inversión en I+D.
 Barreras de entrada significativas.</p>
 
-        </div>
         """, unsafe_allow_html=True)
     with col2:
         st.markdown('<div class="custom-panel"><h3>2. Distribución de Ingresos</h3></div>', unsafe_allow_html=True)
@@ -522,6 +515,7 @@ with tab5:
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
     
+
 
 
 
