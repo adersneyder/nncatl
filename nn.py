@@ -296,86 +296,45 @@ with tab1:
             <p><strong>1. Perfil Corporativo
 
 CATL es el mayor fabricante mundial de baterías de iones de litio para vehículos eléctricos (EV), con sede en Ningde, China. Posee aproximadamente el 37% de la cuota de mercado global, consolidándose como líder absoluto del sector.
-
-Es proveedor estratégico de fabricantes automotrices globales como:
-
-Tesla
-
-BMW
-
-Volkswagen
-
-Ford Motor Company
-
+Es proveedor estratégico de fabricantes automotrices globales como Tesla, BMW, Volkswagen y Ford Motor Company
 Su posición la convierte en un actor sistémico dentro de la transición energética global.
 
-2. Modelo de Negocio y Ventaja Competitiva
-
-Ventaja competitiva clave:
-
-Innovación química
+2. Ventaja competitiva clave: innovación química
 
 Liderazgo en baterías LFP (Litio-Fosfato de Hierro), más seguras y con menor costo.
-
 Desarrollo de baterías de iones de sodio, alternativa estratégica ante riesgos de suministro de litio.
-
-Integración vertical
-
-Participación directa en la cadena de suministro de minerales críticos (litio, níquel, cobalto).
-
-Reducción de volatilidad de costos y mayor resiliencia ante shocks de commodities.
-
 Economías de escala
-
 Gran capacidad instalada.
-
 Poder de negociación frente a OEMs automotrices.
 
-3. Drivers de Crecimiento
+3. Modelo de neogcio: Integración vertical
+Participación directa en la cadena de suministro de minerales críticos (litio, níquel, cobalto).
+Reducción de volatilidad de costos y mayor resiliencia ante shocks de commodities.
 
+4. Drivers de Crecimiento
 Expansión global del mercado de vehículos eléctricos.
-
 Regulaciones ambientales más estrictas en Europa y EE.UU.
-
 Reducción estructural del costo por kWh.
-
 Penetración en almacenamiento energético estacionario (BESS).
 
-4. Riesgos Clave (Perspectiva Analista de Riesgo)
-
+5. Riesgos Clave (Perspectiva Analista de Riesgo)
 Riesgo geopolítico
-
 Alta exposición a China.
-
 Tensiones China–EE.UU. pueden afectar acceso a mercados o tecnología.
-
 Riesgo regulatorio
-
-Políticas industriales occidentales que incentivan producción local (ej. subsidios condicionados).
-
 Riesgo de concentración de clientes
-
 Dependencia significativa de grandes OEMs.
-
 Presión sobre márgenes por poder negociador de fabricantes automotrices.
-
-Riesgo tecnológico
-
 Posible disrupción por baterías de estado sólido u otras químicas emergentes.
-
 Riesgo de commodities
-
 Volatilidad en precios de litio y níquel, aunque mitigado parcialmente por integración vertical.
 
-5. Posicionamiento Estratégico
-
+6. Posicionamiento Estratégico
 CATL no es solo un fabricante de baterías; es un activo estratégico dentro de la infraestructura de electrificación global. Su liderazgo en cuota de mercado (~37%) le otorga:
-
 Ventaja en costos.
-
 Capacidad de inversión en I+D.
-
 Barreras de entrada significativas.</p>
+
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -563,6 +522,7 @@ with tab5:
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
     
+
 
 
 
