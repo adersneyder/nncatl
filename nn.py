@@ -518,6 +518,88 @@ with tab5:
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
     
 
+# ==========================================
+# 5. EXPORTAR REPORTE A PDF
+# ==========================================
+st.markdown("---")
+st.markdown("### 📥 Exportar Reporte Analítico")
+
+# Función para limpiar el HTML y acentos (FPDF estándar requiere texto limpio)
+def limpiar_texto(texto_html):
+    cleanr = re.compile('<.*?>')
+    texto_limpio = re.sub(cleanr, '', texto_html)
+    # Reemplazo básico para evitar errores de encoding en FPDF
+    reemplazos = {'á':'a', 'é':'e', 'í':'i', 'ó':'o', 'ú':'u', 'ñ':'n', 'Á':'A', 'É':'E', 'Í':'I', 'Ó':'O', 'Ú':'U', '“':'"', '”':'"'}
+    for orig, nuevo in reemplazos.items():
+        texto_limpio = texto_limpio.replace(orig, nuevo)
+    return texto_limpio
+
+def generar_pdf():
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Encabezado
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Terminal de Analisis CATL (300750.SZ)", ln=True, align='C')
+    pdf.set_font("Arial", '', 10)
+    pdf.cell(0, 10, f"Fecha de reporte: {datetime.now().strftime('%Y-%m-%d %H:%M')}", ln=True, align='C')
+    pdf.ln(5)
+
+    # TAB 1
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, "1. Perfil y Riesgos Geopoliticos", ln=True)
+    pdf.set_font("Arial", '', 11)
+    pdf.multi_cell(0, 6, "CATL es el mayor fabricante mundial de baterias EV. Su ventaja competitiva radica en la innovacion quimica (LFP) y la integracion vertical en la cadena de suministro.")
+    pdf.multi_cell(0, 6, limpiar_texto(f"-> Evaluacion de Riesgo Geopolitico (Input del Analista): {geo_risk_input} / 10"))
+    pdf.ln(5)
+
+    # TAB 2
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, "2. Analisis Tecnico y Beta", ln=True)
+    pdf.set_font("Arial", '', 11)
+    pdf.multi_cell(0, 6, limpiar_texto(f"-> Sentimiento Tecnico Declarado: {chart_analysis_input.split()[0]}"))
+    pdf.multi_cell(0, 6, f"-> Beta Dinamica (1 Ano vs CSI 300): {beta_val:.2f}")
+    pdf.ln(5)
+
+    # TAB 3
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, "3. Analisis Fundamental", ln=True)
+    pdf.set_font("Arial", '', 11)
+    pdf.multi_cell(0, 6, f"-> ROE (Modelo DuPont): {FUND_ROE:.2f}%")
+    pdf.multi_cell(0, 6, f"-> Ratio de Liquidez (Test de Acidez): {FUND_ACID:.2f}")
+    pdf.ln(5)
+
+    # TAB 4
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, "4. Teoria de Riesgo (IRP)", ln=True)
+    pdf.set_font("Arial", '', 11)
+    pdf.multi_cell(0, 6, "La Paridad de Tipos de Interes (IRP) es la base exacta sobre la que los bancos calculan los tipos de cambio a plazo (forward) para que la empresa pueda cubrir el riesgo de divisa.")
+    pdf.ln(5)
+
+    # TAB 5
+    pdf.set_font("Arial", 'B', 12)
+    pdf.cell(0, 10, "5. Veredicto Final Ponderado", ln=True)
+    pdf.set_font("Arial", 'B', 11)
+    pdf.cell(0, 10, f"-> Veredicto: {v}", ln=True)
+    pdf.set_font("Arial", '', 11)
+    pdf.multi_cell(0, 6, f"-> Puntaje Algoritmico: {final_score:.3f}")
+    pdf.multi_cell(0, 6, limpiar_texto(f"-> Justificacion: {r}"))
+
+    # Convertir a bytes para descarga
+    return pdf.output(dest='S').encode('latin1')
+
+# Crear el botón de descarga
+try:
+    pdf_bytes = generar_pdf()
+    st.download_button(
+        label="📄 Descargar Reporte en PDF",
+        data=pdf_bytes,
+        file_name=f"Reporte_Riesgo_CATL_{datetime.now().strftime('%Y%m%d')}.pdf",
+        mime="application/pdf",
+        use_container_width=True
+    )
+except Exception as e:
+    st.error(f"Error al generar el PDF: {e}")
 
 
 
