@@ -400,8 +400,19 @@ with tab3:
 with tab4:
     st.markdown("""
     <div class="custom-panel">
-        <h3>Gestión de Tesorería: Paridad de Tipos de Interés (IRP)</h3>
-        <p>Un Jefe de Tesorería y Riesgos se dedica a gestionar la liquidez y a cerrar coberturas (hedging). La IRP es la base matemática exacta sobre la que los bancos y tesoreros calculan los tipos de cambio a plazo (Forward Exchange Rates) para cubrir el riesgo de divisa de las empresas. El efecto Fisher o la Paridad de Poder Adquisitivo son útiles a nivel macroeconómico, pero la IRP es el "pan de cada día" en una mesa de tesorería.</p>
+        <h3>Teoría de Divisas: Circuito cerrado</h3>
+        <p>Para un gigante exportador como CATL, las fluctuaciones del EUR/CNY y USD/CNY son vitales. Analizamos el entorno actual mediante la conexión de tres teorías fundamentales:
+
+FLUJO LÓGICO INTEGRADO:
+
+1. Inflación (Diferencial) ↑
+   ↓
+2. Tipos de Interés Nominal ↑ (Efecto Fisher)
+   ↓
+3. La Moneda se deprecia para ajustar el poder de compra (Paridad Poder Adquisitivo - PPA)
+   ↓
+4. La expectativa de depreciación compensa el diferencial de tipos (Paridad Tipos de Interés - PTI)
+Aplicación a CATL (España/UE vs China): Si la Eurozona mantiene una inflación más alta que China, el BCE debe mantener tipos altos (Fisher). A largo plazo, el Euro debería depreciarse frente al Yuan (PPA). En el mercado forward, el Euro cotizará con descuento para anular la ventaja del tipo de interés europeo (PTI). Un Yuan fuerte encarece las baterías de CATL para las automotrices europeas o japonesas (vs Yen).</p>
         <p><strong>Explicación de la IRP:</strong> Establece que la diferencia en los tipos de interés entre dos países debe ser igual a la diferencia entre el tipo de cambio a plazo (forward) y el tipo de cambio al contado (spot). Si esto no se cumple, existiría una oportunidad de arbitraje libre de riesgo.</p>
     </div>
     """, unsafe_allow_html=True)
@@ -475,4 +486,5 @@ with tab5:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
 
