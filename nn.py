@@ -7,6 +7,8 @@ from plotly.subplots import make_subplots
 from datetime import datetime, timedelta
 from scipy import stats
 import time
+from fpdf import FPDF
+import re
 
 # ==========================================
 # 0. CONFIGURACIÓN DE LA PÁGINA Y ESTILOS
@@ -515,6 +517,7 @@ with tab5:
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
     
+
 
 
 
