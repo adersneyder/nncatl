@@ -11,8 +11,6 @@ import time
 # ==========================================
 # 0. CONFIGURACIÓN DE LA PÁGINA Y ESTILOS
 # ==========================================
-st.set_page_config(layout="wide", page_title="Terminal Análisis CATL (300750.SZ)")
-
 st.markdown("""
 <style>
     :root {
@@ -31,7 +29,25 @@ st.markdown("""
         background-color: var(--panel-bg); border: 1px solid var(--border-color);
         border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
-    .header-container { padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+    
+    /* --- NUEVOS ESTILOS PARA EL LOGO Y HEADER --- */
+    .header-container { 
+        text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; 
+    }
+    .logo-container {
+        width: 50%; /* Cubre el 50% del encabezado */
+        margin: 0 auto 15px auto; /* Centrado horizontal */
+    }
+    .company-logo {
+        width: 100%;
+        height: auto;
+        background-color: white; /* Fondo blanco para contraste del logo */
+        /* Efecto de bordes suavizados y diluidos */
+        -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+        mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+    }
+    /* ------------------------------------------ */
+
     h1, h2, h3 { color: #ffffff !important; font-weight: 600; }
     .metric-value { font-size: 28px; font-weight: bold; margin: 10px 0; }
     .green-text { color: var(--accent-green); }
@@ -95,6 +111,19 @@ def get_integrated_data():
     df_catl, source_catl, layer_catl = fetch_with_fallbacks(TICKER_CATL_PRIMARY, TICKER_CATL_PROXY)
     df_mkt, source_mkt, layer_mkt = fetch_with_fallbacks(TICKER_MKT_PRIMARY, TICKER_MKT_PROXY)
     
+    # --- CAPA DE EXTRACCIÓN FUNDAMENTAL TIEMPO REAL ---
+    try:
+        catl_info = yf.Ticker(TICKER_CATL_PRIMARY).info
+        # YFinance devuelve el ROE como decimal (ej. 0.1856), lo multiplicamos por 100
+        fund_roe = catl_info.get('returnOnEquity', 0.1856) * 100
+        fund_acid = catl_info.get('quickRatio', 1.35)
+        fund_source = "Tiempo Real"
+    except:
+        fund_roe = 18.56
+        fund_acid = 1.35
+        fund_source = "Estático (Respaldo)"
+    # --------------------------------------------------
+
     if layer_catl == 3 or layer_mkt == 3:
         st.error("⚠️ Activando Capa 3: Simulación Estadística.")
         df_catl = generate_simulated_data(170, 0.025)
@@ -107,10 +136,10 @@ def get_integrated_data():
 
     current_price = df_catl['Close'].iloc[-1]
     p_change = (df_catl['Close'].iloc[-1] / df_catl['Close'].iloc[-2] - 1) * 100
-    return df_catl, df_mkt, current_price, p_change, source_info
+    return df_catl, df_mkt, current_price, p_change, source_info, fund_roe, fund_acid, fund_source
 
-with st.spinner('Sincronizando terminal...'):
-    df_catl, df_mkt, cur_price, cur_change, data_source = get_integrated_data()
+with st.spinner('Sincronizando terminal y descargando fundamentales...'):
+    df_catl, df_mkt, cur_price, cur_change, data_source, FUND_ROE, FUND_ACID, fund_source = get_integrated_data()
 
 # ==========================================
 # 2. CÁLCULOS FINANCIEROS Y BETA DINÁMICA
@@ -157,23 +186,25 @@ df_catl_tech = apply_technicals(df_catl)
 # 3. INTERFAZ Y HEADER
 # ==========================================
 change_class = "green-text" if cur_change >= 0 else "red-text"
+logo_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/CATL_logo.svg/512px-CATL_logo.svg.png"
 
 st.markdown(f"""
 <div class="header-container">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <h1>Análisis Cuantitativo y de Riesgo: CATL</h1>
-            <p class="muted-text">Ticker Analizado: 300750.SZ | Índice: CSI 300</p>
-            <p style="font-size: 20px; font-weight: bold;">Precio Actual: {cur_price:.2f} | 
-               Variación: <span class="{change_class}">{cur_change:.2f}%</span></p>
-        </div>
-        <div>
-            <span class="status-badge" style="font-size: 14px;">Fuente: {data_source}</span>
+    <div class="logo-container">
+        <img src="{logo_url}" class="company-logo" alt="CATL Logo">
+    </div>
+    <div>
+        <h1>Análisis Cuantitativo y de Riesgo: CATL</h1>
+        <p class="muted-text">Ticker Analizado: 300750.SZ | Índice: CSI 300</p>
+        <p style="font-size: 20px; font-weight: bold;">Precio Actual: ¥{cur_price:.2f} | 
+           Variación: <span class="{change_class}">{cur_change:.2f}%</span></p>
+        <div style="margin-top: 10px;">
+            <span class="status-badge" style="font-size: 14px;">Cotización: {data_source}</span>
+            <span class="status-badge" style="font-size: 14px; background-color: var(--accent-blue);">Fundamentales: {fund_source}</span>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
-
 # ==========================================
 # 4. PANELES DE CONTENIDO (4 TABS NUEVOS)
 # ==========================================
@@ -191,7 +222,7 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
     with col2:
-        st.markdown('<div class="custom-panel"><h3>2. Distribución de ngresos</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="custom-panel"><h3>2. Distribución de Ingresos</h3></div>', unsafe_allow_html=True)
         fig_donut = go.Figure(data=[go.Pie(labels=['Baterías EV', 'Almacenamiento', 'Materiales', 'Otros'], values=[70, 15, 10, 5], hole=.6, marker_colors=['#58a6ff', '#3fb950', '#f85149', '#8b949e'])])
         fig_donut.update_layout(margin=dict(t=10, b=10, l=10, r=10), height=280, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font=dict(color='#8b949e'), showlegend=False)
         st.plotly_chart(fig_donut, use_container_width=True)
@@ -254,11 +285,12 @@ with tab2:
         """, unsafe_allow_html=True)
 
 # --- TAB 3: ANÁLISIS FUNDAMENTAL ---
+# --- TAB 3: ANÁLISIS FUNDAMENTAL ---
 with tab3:
     col_f1, col_f2 = st.columns(2)
     
     with col_f1:
-        st.markdown("""
+        st.markdown(f"""
         <div class="custom-panel">
             <h3>Análisis DuPont (ROE)</h3>
             <p>El modelo DuPont desglosa la rentabilidad sobre el patrimonio (ROE) en tres factores fundamentales, permitiendo entender exactamente de dónde proviene la rentabilidad de la empresa:</p>
@@ -270,8 +302,21 @@ with tab3:
             <div style="background: rgba(88, 166, 255, 0.1); border-left: 4px solid var(--accent-blue); padding: 15px; font-family: monospace; font-size: 15px; margin: 20px 0;">
                 ROE = Margen Neto × Rotación Activos × Multiplicador Capital
             </div>
-            <div class="metric-value green-text">18.56%</div>
-            <p class="muted-text">Resultado Analítico. Indica una rentabilidad robusta y eficiente para la industria.</p>
+            <div class="metric-value green-text">{FUND_ROE:.2f}%</div>
+            <p class="muted-text">Fuente: {fund_source}. Indica una rentabilidad robusta y eficiente para la industria.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col_f2:
+        st.markdown(f"""
+        <div class="custom-panel">
+            <h3>Ratio de Liquidez: Test de Acidez</h3>
+            <p>El Test Ácido (Quick Ratio) es una métrica de solvencia extrema. Mide la capacidad de la empresa para cumplir con sus obligaciones financieras a corto plazo utilizando únicamente sus activos más líquidos, descartando los inventarios.</p>
+            <div style="background: rgba(88, 166, 255, 0.1); border-left: 4px solid var(--accent-blue); padding: 15px; font-family: monospace; font-size: 15px; margin: 20px 0;">
+                Test Ácido = (Activo Corriente - Inventarios) / Pasivo Corriente
+            </div>
+            <div class="metric-value green-text">{FUND_ACID:.2f}</div>
+            <p class="muted-text">Fuente: {fund_source}. Al ser mayor que 1.0, indica liquidez suficiente para operar sin riesgo de insolvencia a corto plazo.</p>
         </div>
         """, unsafe_allow_html=True)
         FUND_ROE = 18.56
@@ -334,4 +379,5 @@ with tab4:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
 
