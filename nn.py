@@ -269,7 +269,6 @@ with tab2:
         """, unsafe_allow_html=True)
 
 # --- TAB 3: ANÁLISIS FUNDAMENTAL ---
-# --- TAB 3: ANÁLISIS FUNDAMENTAL ---
 with tab3:
     col_f1, col_f2 = st.columns(2)
     
@@ -304,20 +303,6 @@ with tab3:
         </div>
         """, unsafe_allow_html=True)
         FUND_ROE = 18.56
-        
-    with col_f2:
-        st.markdown("""
-        <div class="custom-panel">
-            <h3>Ratio de Liquidez: Test de Acidez</h3>
-            <p>El Test Ácido (Quick Ratio) es una métrica de solvencia extrema. Mide la capacidad de la empresa para cumplir con sus obligaciones financieras a corto plazo utilizando únicamente sus activos más líquidos, descartando los inventarios.</p>
-            <div style="background: rgba(88, 166, 255, 0.1); border-left: 4px solid var(--accent-blue); padding: 15px; font-family: monospace; font-size: 15px; margin: 20px 0;">
-                Test Ácido = (Activo Corriente - Inventarios) / Pasivo Corriente
-            </div>
-            <div class="metric-value green-text">1.35</div>
-            <p class="muted-text">Al ser mayor que 1.0, indica que la empresa posee liquidez más que suficiente para operar sin riesgo de insolvencia a corto plazo.</p>
-        </div>
-        """, unsafe_allow_html=True)
-        FUND_ACID = 1.35
 
 # --- TAB 4: VEREDICTO DE RIESGO ---
 with tab4:
@@ -363,6 +348,7 @@ with tab4:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
 
 
 
