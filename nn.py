@@ -55,6 +55,7 @@ st.markdown("""
 # 0.5 VENTANAS DE ALERTA Y SEGURIDAD (GATEKEEPERS)
 # ==========================================
 
+# Inicializar variables en la memoria de la sesión
 if 'indicaciones_leidas' not in st.session_state:
     st.session_state.indicaciones_leidas = False
 if 'quiz_aprobado' not in st.session_state:
@@ -73,13 +74,14 @@ if not st.session_state.indicaciones_leidas:
     3. El calculo de Beta, análisis DuPont y test de acidez, son alimentados en tiempo real, asi como la cotización de la acción.
     """)
     
+    # Botón centrado para continuar
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         if st.button("Entendido", use_container_width=True):
             st.session_state.indicaciones_leidas = True
-            st.rerun() 
+            st.rerun() # Recarga la página para pasar a la siguiente pantalla
             
-    st.stop() 
+    st.stop() # Detiene la ejecución para que no se vea el resto de la app
 
 # --- VENTANA 2: QUIZ DE SEGURIDAD ---
 if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
@@ -87,39 +89,47 @@ if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
     
     st.markdown("<h4 style='text-align: center;'>Antes de continuar...</h4>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center; color: white;'>Equipo mas grande en la historia del futbol:</h3>", unsafe_allow_html=True)
-    st.write("") 
+    st.write("") # Espacio
     
+    # --- NUEVO: CSS para hacer el texto de las respuestas azul claro y negrita ---
     st.markdown("""
         <style>
         div[data-testid="stButton"] button p {
-            color: #58a6ff !important; 
+            color: #58a6ff !important; /* Azul claro (Accent Blue del tema) */
             font-weight: bold !important;
             font-size: 16px !important;
         }
+        /* Opcional: Que el borde del botón también haga juego con el azul al pasar el ratón */
         div[data-testid="stButton"] button:hover {
             border-color: #58a6ff !important;
             color: #58a6ff !important;
         }
         </style>
     """, unsafe_allow_html=True)
+    # -----------------------------------------------------------------------------
     
+    # Contenedor vacío para mostrar los emojis dinámicamente
     espacio_mensaje = st.empty()
     
+    # Función para manejar la respuesta
     def procesar_respuesta(es_correcta):
         if es_correcta:
+            # Mostramos la cara feliz gigante
             espacio_mensaje.markdown("<h1 style='text-align: center; font-size: 100px;'>😀 SIIIIIIU!</h1>", unsafe_allow_html=True)
-            time.sleep(2) 
-            espacio_mensaje.empty() 
+            time.sleep(2) # Espera segundo
+            espacio_mensaje.empty() # Borra la cara feliz
             st.session_state.quiz_aprobado = True
-            st.rerun() 
+            st.rerun() # Entra a la aplicación principal
         else:
+            # Mostramos la ceja levantada y el texto
             espacio_mensaje.markdown("""
                 <h1 style='text-align: center; font-size: 80px;'>🤨</h1>
                 <h3 style='text-align: center; color: var(--accent-red);'>Es en serio!!!?</h3>
             """, unsafe_allow_html=True)
-            time.sleep(1) 
-            espacio_mensaje.empty() 
+            time.sleep(1) # Espera 1 segundo
+            espacio_mensaje.empty() # Borra el mensaje de error para que vuelva a intentar
 
+    # Botones de opciones
     col_a, col_b, col_c, col_d = st.columns(4)
     with col_a:
         if st.button("a. Barcelona", use_container_width=True): procesar_respuesta(False)
@@ -130,8 +140,9 @@ if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
     with col_d:
         if st.button("d. Bayern", use_container_width=True): procesar_respuesta(False)
 
-    st.stop() 
+    st.stop() # Detiene la ejecución hasta que responda bien
     
+# A PARTIR DE AQUÍ COMIENZA A EJECUTARSE TU APLICACIÓN FINANCIERA (Sección 1 en adelante)
 # ==========================================
 # 1. MOTOR DE DATOS DE 3 CAPAS
 # ==========================================
@@ -176,8 +187,10 @@ def get_integrated_data():
     df_catl, source_catl, layer_catl = fetch_with_fallbacks(TICKER_CATL_PRIMARY, TICKER_CATL_PROXY)
     df_mkt, source_mkt, layer_mkt = fetch_with_fallbacks(TICKER_MKT_PRIMARY, TICKER_MKT_PROXY)
     
+    # --- CAPA DE EXTRACCIÓN FUNDAMENTAL TIEMPO REAL ---
     try:
         catl_info = yf.Ticker(TICKER_CATL_PRIMARY).info
+        # YFinance devuelve el ROE como decimal (ej. 0.1856), lo multiplicamos por 100
         fund_roe = catl_info.get('returnOnEquity', 0.1856) * 100
         fund_acid = catl_info.get('quickRatio', 1.35)
         fund_source = "Tiempo Real"
@@ -185,6 +198,7 @@ def get_integrated_data():
         fund_roe = 18.56
         fund_acid = 1.35
         fund_source = "Estático (Respaldo)"
+    # --------------------------------------------------
 
     if layer_catl == 3 or layer_mkt == 3:
         st.error("⚠️ Activando Capa 3: Simulación Estadística.")
@@ -247,22 +261,15 @@ df_catl_tech = apply_technicals(df_catl)
 # ==========================================
 # 3. INTERFAZ Y HEADER
 # ==========================================
-import base64
 change_class = "green-text" if cur_change >= 0 else "red-text"
-
-try:
-    with open("logo.png", "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode()
-    logo_url = f"data:image/png;base64,{encoded_string}"
-except FileNotFoundError:
-    logo_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/CATL_logo.svg/512px-CATL_logo.svg.png"
+logo_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/CATL_logo.svg/512px-CATL_logo.svg.png"
 
 st.markdown(f"""
 <div class="header-container">
-    <div class="logo-container" style="width: 50%; margin: 0 auto 15px auto;">
-        <img src="{logo_url}" alt="CATL Logo" style="width: 100%; height: auto; background-color: white; -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%); mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);">
+    <div class="logo-container">
+        <img src="{logo_url}" class="company-logo" alt="CATL Logo">
     </div>
-    <div style="text-align: center;">
+    <div>
         <h1>Análisis Cuantitativo y de Riesgo: CATL</h1>
         <p class="muted-text">Ticker Analizado: 300750.SZ | Índice: CSI 300</p>
         <p style="font-size: 20px; font-weight: bold;">Precio Actual: ¥{cur_price:.2f} | 
@@ -274,17 +281,10 @@ st.markdown(f"""
     </div>
 </div>
 """, unsafe_allow_html=True)
-
 # ==========================================
-# 4. PANELES DE CONTENIDO (5 TABS)
+# 4. PANELES DE CONTENIDO (4 TABS NUEVOS)
 # ==========================================
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "1. Perfil y Riesgos", 
-    "2. Análisis Técnico y Beta", 
-    "3. Análisis Fundamental", 
-    "4. Teoría de Riesgo", 
-    "5. Veredicto de Riesgo"
-])
+tab1, tab2, tab3, tab4 = st.tabs(["1. Perfil y Riesgos", "2. Análisis Técnico y Beta", "3. Análisis Fundamental", "4. Veredicto de Riesgo"])
 
 # --- TAB 1: PERFIL Y GEOPOLÍTICA ---
 with tab1:
@@ -394,13 +394,84 @@ with tab3:
             <p class="muted-text">Fuente: {fund_source}. Al ser mayor que 1.0, indica liquidez suficiente para operar sin riesgo de insolvencia a corto plazo.</p>
         </div>
         """, unsafe_allow_html=True)
-
-# --- TAB 4: TEORÍA DE RIESGO ---
+        FUND_ROE = 18.56
+        
+# --- TAB 4: TEORÍA DE DIVISAS ---
 with tab4:
     st.markdown("""
     <div class="custom-panel">
         <h3>Gestión de Tesorería: Paridad de Tipos de Interés (IRP)</h3>
         <p>Un Jefe de Tesorería y Riesgos se dedica a gestionar la liquidez y a cerrar coberturas (hedging). La IRP es la base matemática exacta sobre la que los bancos y tesoreros calculan los tipos de cambio a plazo (Forward Exchange Rates) para cubrir el riesgo de divisa de las empresas. El efecto Fisher o la Paridad de Poder Adquisitivo son útiles a nivel macroeconómico, pero la IRP es el "pan de cada día" en una mesa de tesorería.</p>
-        <p><strong>Explicación de la IRP:</strong> Establece que la diferencia en los tipos de interés entre dos países debe ser igual a la diferencia entre el tipo de cambio a plazo (forward
+        <p><strong>Explicación de la IRP:</strong> Establece que la diferencia en los tipos de interés entre dos países debe ser igual a la diferencia entre el tipo de cambio a plazo (forward) y el tipo de cambio al contado (spot). Si esto no se cumple, existiría una oportunidad de arbitraje libre de riesgo.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class="custom-panel">
+        <h4>Prueba de Conocimiento:</h4>
+        <p>¿Por qué la IRP es la teoría más precisa para que el Tesorero de CATL analice y ejecute la cobertura de sus exportaciones a Europa?</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Adaptación a Streamlit del Quiz interactivo
+    opcion_irp = st.radio(
+        "Selecciona tu respuesta:",
+        [
+            "A) Porque predice a la perfección los shocks inflacionarios europeos a largo plazo.",
+            "B) Porque proporciona las tasas forward matemáticas exactas que los bancos usarán hoy para cerrar los contratos de derivados, eliminando el arbitraje de mercado.",
+            "C) Porque dicta las políticas del BCE sobre regulaciones de carbono."
+        ],
+        index=None # Para que ninguna opción salga marcada por defecto
+    )
 
+    if opcion_irp:
+        if opcion_irp.startswith("B"):
+            st.success("¡Respuesta Correcta! Excelente entendimiento de la aplicación práctica de la IRP en coberturas.")
+        else:
+            st.error("Respuesta Incorrecta. Revisa la definición de la IRP y vuelve a intentarlo.")
 
+            
+# --- TAB 5: VEREDICTO DE RIESGO ---
+with tab5:
+    c_m1, c_m2, c_m3, c_m4 = st.columns(4)
+    with c_m1: st.metric("Beta Dinámica (40%)", f"{beta_val:.2f}")
+    with c_m2: st.metric("Técnico (20%)", chart_analysis_input.split()[0])
+    with c_m3: st.metric("Geopolítico (25%)", f"{geo_risk_input} / 10")
+    with c_m4: st.metric("Acidez (15%)", f"{FUND_ACID}")
+
+    if beta_val > 1.5: beta_score = -1.0
+    elif beta_val > 1.2: beta_score = -0.3
+    elif beta_val < 0.8: beta_score = 0.8
+    else: beta_score = 1.0
+    
+    geo_score = geo_risk_input / 10.0
+    tech_map = {"Bajista (Bearish) 🔴": -1, "Neutral ⚪": 0, "Alcista (Bullish) 🟢": 1}
+    tech_score = tech_map[chart_analysis_input]
+    acid_score = 1.0 if FUND_ACID > 1 else -0.5
+    
+    final_score = (beta_score * 0.40) + (geo_score * 0.25) + (tech_score * 0.20) + (acid_score * 0.15)
+    
+    if final_score >= 0.4:
+        v, c, r = "COMPRAR", "var(--accent-green)", "No asumas riesgos que el mercado no asume; los fundamentales (ROE 18.56%) y el análisis técnico compensan la volatilidad."
+    elif final_score <= -0.2:
+        v, c, r = "VENDER", "var(--accent-red)", "Riesgo excesivo. La Beta o el sentimiento negativo no compensan la inversión."
+    else:
+        v, c, r = "MANTENER", "#d29922", "Incertidumbre. Fuerzas contrapuestas sugieren vigilar el activo antes de tomar acción."
+
+    st.markdown(f"""
+    <div class="verdict-panel">
+        <h3>CONCLUSIÓN FINAL PONDERADA</h3>
+        <div id="verdict-result" style="color: {c};">{v}</div>
+        <p style="color: #8b949e;">Puntaje Algorítmico: {final_score:.3f} (-1 a 1)</p>
+        <p>{r}</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
+    df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+    
+    fig_norm = go.Figure()
+    fig_norm.add_trace(go.Scatter(x=df_n_catl.index, y=df_n_catl, name='Activo Analizado', line=dict(color='#58a6ff')))
+    fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
+    fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
+    st.plotly_chart(fig_norm, use_container_width=True)
