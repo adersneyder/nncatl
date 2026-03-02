@@ -88,7 +88,7 @@ if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
     st.markdown("<h2 style='text-align: center; color: var(--accent-red);'>🔒 Verificación de Acceso</h2>", unsafe_allow_html=True)
     
     st.markdown("<h4 style='text-align: center;'>Debes responder correctamente a la siguiente pregunta:</h4>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center; color: white;'>Cual es el equipo mas grande en la historia del futbol?</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: white;'>Equipo mas grande en la historia del futbol:</h3>", unsafe_allow_html=True)
     st.write("") # Espacio
     
     # Contenedor vacío para mostrar los emojis dinámicamente
@@ -98,7 +98,7 @@ if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
     def procesar_respuesta(es_correcta):
         if es_correcta:
             # Mostramos la cara feliz gigante
-            espacio_mensaje.markdown("<h1 style='text-align: center; font-size: 80px;'>😀</h1>", unsafe_allow_html=True)
+            espacio_mensaje.markdown("<h1 style='text-align: center; font-size: 80px;'>😀 SIIIIIU!</h1>", unsafe_allow_html=True)
             time.sleep(1) # Espera 1 segundo
             espacio_mensaje.empty() # Borra la cara feliz
             st.session_state.quiz_aprobado = True
@@ -423,6 +423,7 @@ with tab4:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
 
 
 
