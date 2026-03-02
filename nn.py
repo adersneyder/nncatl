@@ -482,12 +482,6 @@ with tab5:
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
     
-    fig_norm = go.Figure()
-    fig_norm.add_trace(go.Scatter(x=df_n_catl.index, y=df_n_catl, name='Activo Analizado', line=dict(color='#58a6ff')))
-    fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
-    fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
-    st.plotly_chart(fig_norm, use_container_width=True)
-
 
 
 
