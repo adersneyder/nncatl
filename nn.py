@@ -69,9 +69,9 @@ if not st.session_state.indicaciones_leidas:
     
     st.info("""
     **Indicaciones:**
-    1. Debes valorar el riesgo geopolítico de la compañía (valores + -).
+    1. Debes valorar el riesgo geopolítico de la compañía (+ -).
     2. A partir de los gráficos de análisis tecnico, debes decidir tu postura (bajista, neutral o alcista)
-    3. El calculo de Beta, análisis DuPont y test de acidez, son alimentados en tiempo real.
+    3. El calculo de Beta, análisis DuPont y test de acidez, son alimentados en tiempo real, asi como la cotización de la acción.
     """)
     
     # Botón centrado para continuar
@@ -87,7 +87,7 @@ if not st.session_state.indicaciones_leidas:
 if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
     st.markdown("<h2 style='text-align: center; color: var(--accent-red);'>🔒 Verificación de Acceso</h2>", unsafe_allow_html=True)
     
-    st.markdown("<h4 style='text-align: center;'>Debes responder correctamente a la siguiente pregunta:</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center;'>Antes de continuar...</h4>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center; color: white;'>Equipo mas grande en la historia del futbol:</h3>", unsafe_allow_html=True)
     st.write("") # Espacio
     
@@ -98,8 +98,8 @@ if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
     def procesar_respuesta(es_correcta):
         if es_correcta:
             # Mostramos la cara feliz gigante
-            espacio_mensaje.markdown("<h1 style='text-align: center; font-size: 80px;'>😀 SIIIIIU!</h1>", unsafe_allow_html=True)
-            time.sleep(1) # Espera 1 segundo
+            espacio_mensaje.markdown("<h1 style='text-align: center; font-size: 100px;'>😀 SIIIIIU!</h1>", unsafe_allow_html=True)
+            time.sleep(2) # Espera 1 segundo
             espacio_mensaje.empty() # Borra la cara feliz
             st.session_state.quiz_aprobado = True
             st.rerun() # Entra a la aplicación principal
@@ -423,6 +423,7 @@ with tab4:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
 
 
 
