@@ -11,6 +11,8 @@ import time
 # ==========================================
 # 0. CONFIGURACIÓN DE LA PÁGINA Y ESTILOS
 # ==========================================
+st.set_page_config(layout="wide", page_title="Terminal Análisis CATL (300750.SZ)")
+
 st.markdown("""
 <style>
     :root {
@@ -29,25 +31,7 @@ st.markdown("""
         background-color: var(--panel-bg); border: 1px solid var(--border-color);
         border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
-    
-    /* --- NUEVOS ESTILOS PARA EL LOGO Y HEADER --- */
-    .header-container { 
-        text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; 
-    }
-    .logo-container {
-        width: 50%; /* Cubre el 50% del encabezado */
-        margin: 0 auto 15px auto; /* Centrado horizontal */
-    }
-    .company-logo {
-        width: 100%;
-        height: auto;
-        background-color: white; /* Fondo blanco para contraste del logo */
-        /* Efecto de bordes suavizados y diluidos */
-        -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
-        mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
-    }
-    /* ------------------------------------------ */
-
+    .header-container { padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
     h1, h2, h3 { color: #ffffff !important; font-weight: 600; }
     .metric-value { font-size: 28px; font-weight: bold; margin: 10px 0; }
     .green-text { color: var(--accent-green); }
@@ -379,5 +363,6 @@ with tab4:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
 
 
