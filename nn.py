@@ -54,88 +54,62 @@ st.markdown("""
 # ==========================================
 # 1. MOTOR DE DATOS DE 3 CAPAS
 # ==========================================
-# Tickers Primarios (Acción e Índice Chino)
 TICKER_CATL_PRIMARY = "300750.SZ"
 TICKER_MKT_PRIMARY = "000300.SS" 
-
-# Tickers Proxy ETFs (Capa 2)
-TICKER_CATL_PROXY = "LIT"   # ETF de Litio y Baterías (Proxy de CATL)
-TICKER_MKT_PROXY = "ASHR"   # ETF que replica el CSI 300
+TICKER_CATL_PROXY = "LIT"
+TICKER_MKT_PROXY = "ASHR"
 
 @st.cache_data(ttl=3600)
 def load_single_ticker(ticker, days_back=365*2):
-    """Intenta descargar un ticker específico."""
     start_date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
     end_date = datetime.now().strftime('%Y-%m-%d')
     try:
         data = yf.download(ticker, start=start_date, end=end_date, progress=False)
-        if data.empty:
-            return None
-        if isinstance(data.columns, pd.MultiIndex):
-            data.columns = data.columns.droplevel(1)
+        if data.empty: return None
+        if isinstance(data.columns, pd.MultiIndex): data.columns = data.columns.droplevel(1)
         return data
     except:
         return None
 
 def fetch_with_fallbacks(primary_ticker, proxy_ticker, days_back=365*2):
-    """Arquitectura de Capas 1 y 2"""
-    # CAPA 1: Ticker Real
     df = load_single_ticker(primary_ticker, days_back)
-    if df is not None and len(df) > 50:
-        return df, f"Real ({primary_ticker})", 1
-        
-    # CAPA 2: ETF Proxy
+    if df is not None and len(df) > 50: return df, f"Real ({primary_ticker})", 1
     df_proxy = load_single_ticker(proxy_ticker, days_back)
-    if df_proxy is not None and len(df_proxy) > 50:
-        return df_proxy, f"Proxy ETF ({proxy_ticker})", 2
-        
+    if df_proxy is not None and len(df_proxy) > 50: return df_proxy, f"Proxy ETF ({proxy_ticker})", 2
     return None, "Falla", 3
 
 def generate_simulated_data(base_price, vol, days=730):
-    """CAPA 3: Generación de datos estadísticos (Random Walk)"""
     np.random.seed(42)
     dates = pd.date_range(end=datetime.now(), periods=days)
     returns = np.random.normal(0.0001, vol, days)
     price_path = base_price * (1 + returns).cumprod()
-    
-    df = pd.DataFrame({
+    return pd.DataFrame({
         'Open': price_path * np.random.uniform(0.99, 1.01, days),
         'High': price_path * np.random.uniform(1.0, 1.02, days),
         'Low': price_path * np.random.uniform(0.98, 1.0, days),
         'Close': price_path,
         'Volume': np.random.randint(1000000, 10000000, days)
     }, index=dates)
-    return df
 
 def get_integrated_data():
-    """Orquestador maestro de datos."""
     df_catl, source_catl, layer_catl = fetch_with_fallbacks(TICKER_CATL_PRIMARY, TICKER_CATL_PROXY)
     df_mkt, source_mkt, layer_mkt = fetch_with_fallbacks(TICKER_MKT_PRIMARY, TICKER_MKT_PROXY)
     
-    using_simulation = False
-    
-    # Evaluar si necesitamos ir a la CAPA 3 (Simulación)
     if layer_catl == 3 or layer_mkt == 3:
-        st.error("⚠️ Fallo en Capa 1 (Tiempo Real) y Capa 2 (ETFs). Activando Capa 3: Simulación Estadística.")
-        using_simulation = True
+        st.error("⚠️ Activando Capa 3: Simulación Estadística.")
         df_catl = generate_simulated_data(170, 0.025)
         df_mkt = generate_simulated_data(3500, 0.015)
-        source_info = "Capa 3: Simulación Determinística"
-        current_price = df_catl['Close'].iloc[-1]
-        p_change = (df_catl['Close'].iloc[-1] / df_catl['Close'].iloc[-2] - 1) * 100
+        source_info = "Simulación Determinística"
     else:
-        # Si estamos en capa 2, avisamos al usuario
         if layer_catl == 2 or layer_mkt == 2:
-            st.warning(f"⚠️ API de {TICKER_CATL_PRIMARY} inaccesible. Usando Capa 2: Proxy ETFs ({source_catl} y {source_mkt}).")
-        
+            st.warning(f"⚠️ Usando Capa 2: Proxy ETFs ({source_catl} y {source_mkt}).")
         source_info = f"{source_catl} vs {source_mkt}"
-        current_price = df_catl['Close'].iloc[-1]
-        p_change = (df_catl['Close'].iloc[-1] / df_catl['Close'].iloc[-2] - 1) * 100
 
+    current_price = df_catl['Close'].iloc[-1]
+    p_change = (df_catl['Close'].iloc[-1] / df_catl['Close'].iloc[-2] - 1) * 100
     return df_catl, df_mkt, current_price, p_change, source_info
 
-# Carga global
-with st.spinner('Sincronizando terminal con mercados asiáticos y capas de respaldo...'):
+with st.spinner('Sincronizando terminal...'):
     df_catl, df_mkt, cur_price, cur_change, data_source = get_integrated_data()
 
 # ==========================================
@@ -144,29 +118,20 @@ with st.spinner('Sincronizando terminal con mercados asiáticos y capas de respa
 def calculate_beta_returns(df_stock, df_market, days=365):
     end_date = df_stock.index.max()
     start_date = end_date - timedelta(days=days)
-    
     s_slice = df_stock.loc[start_date:end_date, 'Close']
     m_slice = df_market.loc[start_date:end_date, 'Close']
-    
     s_returns = s_slice.pct_change().dropna()
     m_returns = m_slice.pct_change().dropna()
-    
     aligned_data = pd.merge(s_returns, m_returns, left_index=True, right_index=True, suffixes=('_s', '_m'))
     aligned_data.columns = ['Stock_Returns', 'Market_Returns']
-    
     x = aligned_data['Market_Returns'].values
     y = aligned_data['Stock_Returns'].values
-    
     if len(x) < 20: return 1.0, 0, 0, 0, 0, aligned_data
-
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
     return slope, intercept, r_value**2, p_value, std_err, aligned_data
 
 beta_val, beta_intercept, r2_val, p_val, std_err, returns_df = calculate_beta_returns(df_catl, df_mkt)
 
-# ==========================================
-# 3. INDICADORES TÉCNICOS AVANZADOS
-# ==========================================
 def apply_technicals(df):
     temp_df = df.copy()
     ma20 = temp_df['Close'].rolling(window=20).mean()
@@ -174,13 +139,11 @@ def apply_technicals(df):
     temp_df['BB_Up'] = ma20 + (std20 * 2)
     temp_df['BB_Dn'] = ma20 - (std20 * 2)
     temp_df['BB_MA'] = ma20
-    
     delta = temp_df['Close'].diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
     rs = gain / loss
     temp_df['RSI'] = 100 - (100 / (1 + rs))
-    
     exp1 = temp_df['Close'].ewm(span=12, adjust=False).mean()
     exp2 = temp_df['Close'].ewm(span=26, adjust=False).mean()
     temp_df['MACD'] = exp1 - exp2
@@ -191,23 +154,8 @@ def apply_technicals(df):
 df_catl_tech = apply_technicals(df_catl)
 
 # ==========================================
-# 4. INTERFAZ: HEADER Y SIDEBAR
+# 3. INTERFAZ Y HEADER
 # ==========================================
-st.sidebar.markdown(f"### <span class='blue-text'>Configuración de Análisis</span>", unsafe_allow_html=True)
-st.sidebar.markdown("#### 1. Riesgo Geopolítico (Ponderación 25%)")
-geo_risk_input = st.sidebar.slider("Evaluación de impacto (Negativo 🔴 -> Positivo 🟢)", -10, 10, 2, 1)
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("#### 2. Análisis Técnico de Gráficos (Ponderación 20%)")
-chart_analysis_input = st.sidebar.radio("Sentimiento técnico actual", ("Bajista (Bearish) 🔴", "Neutral ⚪", "Alcista (Bullish) 🟢"), index=1)
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("#### Parámetros Fundamentales Fijos")
-FUND_ROE = 18.56 
-FUND_ACID = 1.35 
-st.sidebar.metric("ROE (DuPont)", f"{FUND_ROE}%")
-st.sidebar.metric("Test Acidez", f"{FUND_ACID}")
-
 change_class = "green-text" if cur_change >= 0 else "red-text"
 
 st.markdown(f"""
@@ -227,10 +175,11 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 5. PANELES DE CONTENIDO (TABS)
+# 4. PANELES DE CONTENIDO (4 TABS NUEVOS)
 # ==========================================
-tab1, tab2, tab3 = st.tabs(["1. Perfil y Riesgos", "2. Análisis Técnico y Beta", "3. Veredicto de Riesgo"])
+tab1, tab2, tab3, tab4 = st.tabs(["1. Perfil y Riesgos", "2. Análisis Técnico y Beta", "3. Análisis Fundamental", "4. Veredicto de Riesgo"])
 
+# --- TAB 1: PERFIL Y GEOPOLÍTICA ---
 with tab1:
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -252,10 +201,13 @@ with tab1:
             <ul><li><strong>EE.UU. (IRA):</strong> Restringe subsidios.</li><li><strong>UE (Battery Passport):</strong> Regulaciones de carbono.</li></ul>
         </div>
         """, unsafe_allow_html=True)
+        
+    st.markdown("### 🎛️ Evaluación de Riesgo Geopolítico (Ponderación 25%)")
+    geo_risk_input = st.slider("Ajusta el impacto esperado de la macroeconomía y política en el activo (Negativo 🔴 -> Positivo 🟢)", -10, 10, 2, 1)
 
+# --- TAB 2: ANÁLISIS TÉCNICO Y BETA ---
 with tab2:
     st.markdown('<div class="custom-panel"><h3>4. Análisis Técnico Interactivo</h3></div>', unsafe_allow_html=True)
-    
     tf_map = {"3 Meses": 90, "6 Meses": 180, "1 Año": 365, "Todo": 730}
     selected_tf = st.select_slider("Temporalidad", options=list(tf_map.keys()), value="6 Meses")
     df_plot = df_catl_tech.iloc[-tf_map[selected_tf]:]
@@ -264,21 +216,21 @@ with tab2:
     fig_tech.add_trace(go.Candlestick(x=df_plot.index, open=df_plot['Open'], high=df_plot['High'], low=df_plot['Low'], close=df_plot['Close'], name='Precio'), row=1, col=1)
     fig_tech.add_trace(go.Scatter(x=df_plot.index, y=df_plot['BB_Up'], line=dict(color='rgba(173,216,230,0.5)', width=1), name='BB Up'), row=1, col=1)
     fig_tech.add_trace(go.Scatter(x=df_plot.index, y=df_plot['BB_Dn'], line=dict(color='rgba(173,216,230,0.5)', width=1), fill='tonexty', fillcolor='rgba(173,216,230,0.1)', name='BB Dn'), row=1, col=1)
-    
     vol_c = ['#3fb950' if r['Close'] >= r['Open'] else '#f85149' for _, r in df_plot.iterrows()]
     fig_tech.add_trace(go.Bar(x=df_plot.index, y=df_plot['Volume'], marker_color=vol_c, opacity=0.5, name='Volumen'), row=2, col=1)
-    
     fig_tech.add_trace(go.Scatter(x=df_plot.index, y=df_plot['MACD'], line=dict(color='#58a6ff'), name='MACD'), row=3, col=1)
     fig_tech.add_trace(go.Scatter(x=df_plot.index, y=df_plot['MACD_Signal'], line=dict(color='#f85149', dash='dot'), name='Señal'), row=3, col=1)
     hist_c = ['#3fb950' if v >= 0 else '#f85149' for v in df_plot['MACD_Hist']]
     fig_tech.add_trace(go.Bar(x=df_plot.index, y=df_plot['MACD_Hist'], marker_color=hist_c, name='Hist'), row=3, col=1)
-    
     fig_tech.add_trace(go.Scatter(x=df_plot.index, y=df_plot['RSI'], line=dict(color='#FF00FF'), name='RSI'), row=4, col=1)
     fig_tech.add_hline(y=70, line_dash="dash", line_color="rgba(248,81,73,0.5)", row=4, col=1)
     fig_tech.add_hline(y=30, line_dash="dash", line_color="rgba(63,185,80,0.5)", row=4, col=1)
 
     fig_tech.update_layout(height=600, template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(t=10, b=10, l=10, r=10), hovermode='x unified', showlegend=False, xaxis=dict(rangeslider=dict(visible=False)))
     st.plotly_chart(fig_tech, use_container_width=True)
+    
+    st.markdown("### 🎛️ Evaluación de Sentimiento Técnico (Ponderación 20%)")
+    chart_analysis_input = st.radio("Con base en los indicadores (MACD, RSI, Bandas), define tu postura técnica:", ("Bajista (Bearish) 🔴", "Neutral ⚪", "Alcista (Bullish) 🟢"), index=1)
 
     col_b1, col_b2 = st.columns([2, 1])
     with col_b1:
@@ -287,12 +239,10 @@ with tab2:
         fig_beta.add_trace(go.Scatter(x=returns_df['Market_Returns'], y=returns_df['Stock_Returns'], mode='markers', marker=dict(color='#58a6ff', opacity=0.5, size=6), name='Retornos'))
         x_range = np.linspace(returns_df['Market_Returns'].min(), returns_df['Market_Returns'].max(), 100)
         fig_beta.add_trace(go.Scatter(x=x_range, y=beta_intercept + beta_val * x_range, mode='lines', line=dict(color='#f85149', width=2), name='Regresión'))
-        
         signo = "+" if beta_intercept >= 0 else "-"
         fig_beta.add_annotation(x=0.05, y=0.95, xref="paper", yref="paper", text=f"R_CATL = {beta_intercept:.4f} {signo} {beta_val:.2f} * R_MKT<br>R² = {r2_val:.3f}", showarrow=False, align="left", bgcolor="rgba(22,27,34,0.8)", font=dict(color="#fff"))
         fig_beta.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=350, margin=dict(t=10, b=30, l=30, r=10), showlegend=False)
         st.plotly_chart(fig_beta, use_container_width=True)
-        
     with col_b2:
         st.markdown(f"""
         <div class="custom-panel" style="height: 400px;">
@@ -302,14 +252,51 @@ with tab2:
         </div>
         """, unsafe_allow_html=True)
 
+# --- TAB 3: ANÁLISIS FUNDAMENTAL ---
 with tab3:
+    col_f1, col_f2 = st.columns(2)
+    
+    with col_f1:
+        st.markdown("""
+        <div class="custom-panel">
+            <h3>Análisis DuPont (ROE)</h3>
+            <p>El modelo DuPont desglosa la rentabilidad sobre el patrimonio (ROE) en tres factores fundamentales, permitiendo entender exactamente de dónde proviene la rentabilidad de la empresa:</p>
+            <ul>
+                <li><strong>Margen Neto:</strong> Eficiencia operativa.</li>
+                <li><strong>Rotación de Activos:</strong> Eficiencia en la generación de ventas.</li>
+                <li><strong>Multiplicador de Capital:</strong> Grado de apalancamiento financiero.</li>
+            </ul>
+            <div style="background: rgba(88, 166, 255, 0.1); border-left: 4px solid var(--accent-blue); padding: 15px; font-family: monospace; font-size: 15px; margin: 20px 0;">
+                ROE = Margen Neto × Rotación Activos × Multiplicador Capital
+            </div>
+            <div class="metric-value green-text">18.56%</div>
+            <p class="muted-text">Resultado Analítico. Indica una rentabilidad robusta y eficiente para la industria.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        FUND_ROE = 18.56
+        
+    with col_f2:
+        st.markdown("""
+        <div class="custom-panel">
+            <h3>Ratio de Liquidez: Test de Acidez</h3>
+            <p>El Test Ácido (Quick Ratio) es una métrica de solvencia extrema. Mide la capacidad de la empresa para cumplir con sus obligaciones financieras a corto plazo utilizando únicamente sus activos más líquidos, descartando los inventarios.</p>
+            <div style="background: rgba(88, 166, 255, 0.1); border-left: 4px solid var(--accent-blue); padding: 15px; font-family: monospace; font-size: 15px; margin: 20px 0;">
+                Test Ácido = (Activo Corriente - Inventarios) / Pasivo Corriente
+            </div>
+            <div class="metric-value green-text">1.35</div>
+            <p class="muted-text">Al ser mayor que 1.0, indica que la empresa posee liquidez más que suficiente para operar sin riesgo de insolvencia a corto plazo.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        FUND_ACID = 1.35
+
+# --- TAB 4: VEREDICTO DE RIESGO ---
+with tab4:
     c_m1, c_m2, c_m3, c_m4 = st.columns(4)
     with c_m1: st.metric("Beta Dinámica (40%)", f"{beta_val:.2f}")
     with c_m2: st.metric("Técnico (20%)", chart_analysis_input.split()[0])
     with c_m3: st.metric("Geopolítico (25%)", f"{geo_risk_input} / 10")
     with c_m4: st.metric("Acidez (15%)", f"{FUND_ACID}")
 
-    # Lógica del Motor
     if beta_val > 1.5: beta_score = -1.0
     elif beta_val > 1.2: beta_score = -0.3
     elif beta_val < 0.8: beta_score = 0.8
@@ -323,7 +310,7 @@ with tab3:
     final_score = (beta_score * 0.40) + (geo_score * 0.25) + (tech_score * 0.20) + (acid_score * 0.15)
     
     if final_score >= 0.4:
-        v, c, r = "COMPRAR", "var(--accent-green)", "No asumas riesgos que el mercado no asume; los fundamentales y gráficos compensan la volatilidad."
+        v, c, r = "COMPRAR", "var(--accent-green)", "No asumas riesgos que el mercado no asume; los fundamentales (ROE 18.56%) y el análisis técnico compensan la volatilidad."
     elif final_score <= -0.2:
         v, c, r = "VENDER", "var(--accent-red)", "Riesgo excesivo. La Beta o el sentimiento negativo no compensan la inversión."
     else:
@@ -338,7 +325,6 @@ with tab3:
     </div>
     """, unsafe_allow_html=True)
     
-    # Gráfico de Normalización
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
     
