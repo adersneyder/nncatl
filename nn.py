@@ -297,7 +297,7 @@ with tab1:
             <h3>1. Introducción a la Compañía</h3>
             <p><strong>CATL</strong> 1. Perfil Corporativo
 
-CATL es el mayor fabricante mundial de baterías de iones de litio para vehículos eléctricos (EV), con sede en Ningde, China. Posee aproximadamente el 37% de la cuota de mercado global, consolidándose como líder absoluto del sector. Es proveedor estratégico de fabricantes automotrices globales como Tesla, BMW, Volkswagen y Ford Motor Company Su posición la convierte en un actor sistémico dentro de la transición energética global.
+Es el mayor fabricante mundial de baterías de iones de litio para vehículos eléctricos (EV), con sede en Ningde, China. Posee aproximadamente el 37% de la cuota de mercado global, consolidándose como líder absoluto del sector. Es proveedor estratégico de fabricantes automotrices globales como Tesla, BMW, Volkswagen y Ford Motor Company Su posición la convierte en un actor sistémico dentro de la transición energética global.
 
 Ventaja competitiva clave: innovación química
 
@@ -495,6 +495,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
