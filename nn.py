@@ -52,6 +52,79 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
+# 0.5 VENTANAS DE ALERTA Y SEGURIDAD (GATEKEEPERS)
+# ==========================================
+
+# Inicializar variables en la memoria de la sesión
+if 'indicaciones_leidas' not in st.session_state:
+    st.session_state.indicaciones_leidas = False
+if 'quiz_aprobado' not in st.session_state:
+    st.session_state.quiz_aprobado = False
+if 'mensaje_error' not in st.session_state:
+    st.session_state.mensaje_error = False
+
+# --- VENTANA 1: INDICACIONES ---
+if not st.session_state.indicaciones_leidas:
+    st.markdown("<h2 style='text-align: center; color: var(--accent-blue);'>⚠️ Alerta: Indicaciones de Uso</h2>", unsafe_allow_html=True)
+    
+    st.info("""
+    **Indicaciones:**
+    1. Debes valorar el riesgo geopolítico de la compañía (positivo o negativo).
+    2. A partir de los gráficos de análisis tecnico, debes decidir tu postura (bajista, neutral o alcista)
+    3. El calculo de Beta, análisis DuPont y test de acidez, son alimentados en tiempo real.
+    """)
+    
+    # Botón centrado para continuar
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        if st.button("Entendido", use_container_width=True):
+            st.session_state.indicaciones_leidas = True
+            st.rerun() # Recarga la página para pasar a la siguiente pantalla
+            
+    st.stop() # Detiene la ejecución para que no se vea el resto de la app
+
+# --- VENTANA 2: QUIZ DE SEGURIDAD ---
+if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
+    st.markdown("<h2 style='text-align: center; color: var(--accent-red);'>🔒 Verificación de Acceso</h2>", unsafe_allow_html=True)
+    
+    st.markdown("<h4 style='text-align: center;'>Debes responder correctamente a la siguiente pregunta:</h4>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: white;'>Cual es el equipo mas grande en la historia del futbol?</h3>", unsafe_allow_html=True)
+    st.write("") # Espacio
+    
+    # Función para manejar la respuesta
+    def procesar_respuesta(es_correcta):
+        if es_correcta:
+            st.session_state.mensaje_error = False
+            # Mostramos la cara feliz gigante
+            cara_feliz = st.empty()
+            cara_feliz.markdown("<h1 style='text-align: center; font-size: 80px;'>😀</h1>", unsafe_allow_html=True)
+            time.sleep(1) # Espera 1 segundo
+            cara_feliz.empty() # Borra la cara feliz
+            st.session_state.quiz_aprobado = True
+            st.rerun() # Entra a la aplicación
+        else:
+            st.session_state.mensaje_error = True
+
+    # Botones de opciones
+    col_a, col_b, col_c, col_d = st.columns(4)
+    with col_a:
+        if st.button("a. Barcelona", use_container_width=True): procesar_respuesta(False)
+    with col_b:
+        if st.button("b. Espanyol", use_container_width=True): procesar_respuesta(False)
+    with col_c:
+        if st.button("c. Real Madrid", use_container_width=True): procesar_respuesta(True)
+    with col_d:
+        if st.button("d. Bayern", use_container_width=True): procesar_respuesta(False)
+
+    # Mensaje de error si marca incorrecta
+    if st.session_state.mensaje_error:
+        st.markdown("<h1 style='text-align: center; font-size: 80px;'>🤨</h1>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; color: var(--accent-red);'>En serio!!!?</h3>", unsafe_allow_html=True)
+
+    st.stop() # Detiene la ejecución hasta que responda bien
+
+# A PARTIR DE AQUÍ COMIENZA A EJECUTARSE TU APLICACIÓN FINANCIERA (Sección 1 en adelante)
+# ==========================================
 # 1. MOTOR DE DATOS DE 3 CAPAS
 # ==========================================
 TICKER_CATL_PRIMARY = "300750.SZ"
@@ -348,6 +421,7 @@ with tab4:
     fig_norm.add_trace(go.Scatter(x=df_n_mkt.index, y=df_n_mkt, name='Índice/Mercado', line=dict(color='#8b949e', dash='dash')))
     fig_norm.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300, margin=dict(t=10, b=10, l=10, r=10), showlegend=True, legend=dict(orientation="h", y=1.02))
     st.plotly_chart(fig_norm, use_container_width=True)
+
 
 
 
