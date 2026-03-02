@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from scipy import stats
 import time
 from fpdf import FPDF
-import re
+import unicodedata
 
 # ==========================================
 # 0. CONFIGURACIÓN DE LA PÁGINA Y ESTILOS
@@ -295,42 +295,20 @@ with tab1:
         st.markdown("""
         <div class="custom-panel">
             <h3>1. Introducción a la Compañía</h3>
-            <p><strong>1. Perfil Corporativo
+            <p><strong>CATL</strong> 1. Perfil Corporativo
 
-CATL es el mayor fabricante mundial de baterías de iones de litio para vehículos eléctricos (EV), con sede en Ningde, China. Posee aproximadamente el 37% de la cuota de mercado global, consolidándose como líder absoluto del sector.
-Es proveedor estratégico de fabricantes automotrices globales como Tesla, BMW, Volkswagen y Ford Motor Company
-Su posición la convierte en un actor sistémico dentro de la transición energética global.
+CATL es el mayor fabricante mundial de baterías de iones de litio para vehículos eléctricos (EV), con sede en Ningde, China. Posee aproximadamente el 37% de la cuota de mercado global, consolidándose como líder absoluto del sector. Es proveedor estratégico de fabricantes automotrices globales como Tesla, BMW, Volkswagen y Ford Motor Company Su posición la convierte en un actor sistémico dentro de la transición energética global.
 
-2. Ventaja competitiva clave: innovación química
+Ventaja competitiva clave: innovación química
 
-Liderazgo en baterías LFP (Litio-Fosfato de Hierro), más seguras y con menor costo.
-Desarrollo de baterías de iones de sodio, alternativa estratégica ante riesgos de suministro de litio.
-Economías de escala
-Gran capacidad instalada.
-Poder de negociación frente a OEMs automotrices.
+Liderazgo en baterías LFP (Litio-Fosfato de Hierro), más seguras y con menor costo. Desarrollo de baterías de iones de sodio, alternativa estratégica ante riesgos de suministro de litio. Economías de escala Gran capacidad instalada. Poder de negociación frente a OEMs automotrices.
 
-3. Modelo de neogcio: Integración vertical
-Participación directa en la cadena de suministro de minerales críticos (litio, níquel, cobalto).
-Reducción de volatilidad de costos y mayor resiliencia ante shocks de commodities.
+Modelo de neogcio: Integración vertical Participación directa en la cadena de suministro de minerales críticos (litio, níquel, cobalto). Reducción de volatilidad de costos y mayor resiliencia ante shocks de commodities.
 
-5. Riesgos Clave
-Riesgo geopolítico
-Alta exposición a China.
-Tensiones China–EE.UU. pueden afectar acceso a mercados o tecnología.
-Riesgo regulatorio
-Riesgo de concentración de clientes
-Dependencia significativa de grandes OEMs.
-Presión sobre márgenes por poder negociador de fabricantes automotrices.
-Posible disrupción por baterías de estado sólido u otras químicas emergentes.
-Riesgo de commodities
-Volatilidad en precios de litio y níquel, aunque mitigado parcialmente por integración vertical.
+Riesgos Clave Riesgo geopolítico Alta exposición a China. Tensiones China–EE.UU. pueden afectar acceso a mercados o tecnología. Riesgo regulatorio Riesgo de concentración de clientes Dependencia significativa de grandes OEMs. Presión sobre márgenes por poder negociador de fabricantes automotrices. Posible disrupción por baterías de estado sólido u otras químicas emergentes. Riesgo de commodities Volatilidad en precios de litio y níquel, aunque mitigado parcialmente por integración vertical.
 
-6. Posicionamiento Estratégico
-CATL no es solo un fabricante de baterías; es un activo estratégico dentro de la infraestructura de electrificación global. Su liderazgo en cuota de mercado (~37%) le otorga:
-Ventaja en costos.
-Capacidad de inversión en I+D.
-Barreras de entrada significativas.</p>
-
+Posicionamiento Estratégico CATL no es solo un fabricante de baterías; es un activo estratégico dentro de la infraestructura de electrificación global. Su liderazgo en cuota de mercado (~37%) le otorga: Ventaja en costos. Capacidad de inversión en I+D. Barreras de entrada significativas.</p>
+        </div>
         """, unsafe_allow_html=True)
     with col2:
         st.markdown('<div class="custom-panel"><h3>2. Distribución de Ingresos</h3></div>', unsafe_allow_html=True)
@@ -345,8 +323,9 @@ Barreras de entrada significativas.</p>
         </div>
         """, unsafe_allow_html=True)
         
-    st.markdown("### 🎛️ Evaluación de Riesgo Geopolítico (Ponderación 25%)")
-    geo_risk_input = st.slider("Ajusta el impacto esperado de la macroeconomía y política en el activo (Negativo 🔴 -> Positivo 🟢)", -10, 10, 2, 1)
+        # El slider ahora está identado dentro de col3
+        st.markdown("#### 🎛️ Evaluación de Riesgo Geopolítico (Ponderación 25%)")
+        geo_risk_input = st.slider("Ajusta el impacto esperado (Negativo 🔴 -> Positivo 🟢)", -10, 10, 2, 1)
 
 # --- TAB 2: ANÁLISIS TÉCNICO Y BETA ---
 with tab2:
@@ -516,90 +495,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
-    
 
-# ==========================================
-# 5. EXPORTAR REPORTE A PDF
-# ==========================================
-st.markdown("---")
-st.markdown("### 📥 Exportar Reporte Analítico")
-
-# Función para limpiar el HTML y acentos (FPDF estándar requiere texto limpio)
-def limpiar_texto(texto_html):
-    cleanr = re.compile('<.*?>')
-    texto_limpio = re.sub(cleanr, '', texto_html)
-    # Reemplazo básico para evitar errores de encoding en FPDF
-    reemplazos = {'á':'a', 'é':'e', 'í':'i', 'ó':'o', 'ú':'u', 'ñ':'n', 'Á':'A', 'É':'E', 'Í':'I', 'Ó':'O', 'Ú':'U', '“':'"', '”':'"'}
-    for orig, nuevo in reemplazos.items():
-        texto_limpio = texto_limpio.replace(orig, nuevo)
-    return texto_limpio
-
-def generar_pdf():
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Encabezado
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Terminal de Analisis CATL (300750.SZ)", ln=True, align='C')
-    pdf.set_font("Arial", '', 10)
-    pdf.cell(0, 10, f"Fecha de reporte: {datetime.now().strftime('%Y-%m-%d %H:%M')}", ln=True, align='C')
-    pdf.ln(5)
-
-    # TAB 1
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 10, "1. Perfil y Riesgos Geopoliticos", ln=True)
-    pdf.set_font("Arial", '', 11)
-    pdf.multi_cell(0, 6, "CATL es el mayor fabricante mundial de baterias EV. Su ventaja competitiva radica en la innovacion quimica (LFP) y la integracion vertical en la cadena de suministro.")
-    pdf.multi_cell(0, 6, limpiar_texto(f"-> Evaluacion de Riesgo Geopolitico (Input del Analista): {geo_risk_input} / 10"))
-    pdf.ln(5)
-
-    # TAB 2
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 10, "2. Analisis Tecnico y Beta", ln=True)
-    pdf.set_font("Arial", '', 11)
-    pdf.multi_cell(0, 6, limpiar_texto(f"-> Sentimiento Tecnico Declarado: {chart_analysis_input.split()[0]}"))
-    pdf.multi_cell(0, 6, f"-> Beta Dinamica (1 Ano vs CSI 300): {beta_val:.2f}")
-    pdf.ln(5)
-
-    # TAB 3
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 10, "3. Analisis Fundamental", ln=True)
-    pdf.set_font("Arial", '', 11)
-    pdf.multi_cell(0, 6, f"-> ROE (Modelo DuPont): {FUND_ROE:.2f}%")
-    pdf.multi_cell(0, 6, f"-> Ratio de Liquidez (Test de Acidez): {FUND_ACID:.2f}")
-    pdf.ln(5)
-
-    # TAB 4
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 10, "4. Teoria de Riesgo (IRP)", ln=True)
-    pdf.set_font("Arial", '', 11)
-    pdf.multi_cell(0, 6, "La Paridad de Tipos de Interes (IRP) es la base exacta sobre la que los bancos calculan los tipos de cambio a plazo (forward) para que la empresa pueda cubrir el riesgo de divisa.")
-    pdf.ln(5)
-
-    # TAB 5
-    pdf.set_font("Arial", 'B', 12)
-    pdf.cell(0, 10, "5. Veredicto Final Ponderado", ln=True)
-    pdf.set_font("Arial", 'B', 11)
-    pdf.cell(0, 10, f"-> Veredicto: {v}", ln=True)
-    pdf.set_font("Arial", '', 11)
-    pdf.multi_cell(0, 6, f"-> Puntaje Algoritmico: {final_score:.3f}")
-    pdf.multi_cell(0, 6, limpiar_texto(f"-> Justificacion: {r}"))
-
-    # Convertir a bytes para descarga
-    return pdf.output(dest='S').encode('latin1')
-
-# Crear el botón de descarga
-try:
-    pdf_bytes = generar_pdf()
-    st.download_button(
-        label="📄 Descargar Reporte en PDF",
-        data=pdf_bytes,
-        file_name=f"Reporte_Riesgo_CATL_{datetime.now().strftime('%Y%m%d')}.pdf",
-        mime="application/pdf",
-        use_container_width=True
-    )
-except Exception as e:
-    st.error(f"Error al generar el PDF: {e}")
 
 
 
