@@ -303,10 +303,10 @@ Su posición la convierte en un actor sistémico dentro de la transición energ�
 Ventaja competitiva clave: innovación química, liderazgo en baterías LFP (Litio-Fosfato de hierro), más seguras y con menor costo. El desarrollo de baterías de iones de sodio es una alternativa estratégica ante riesgos de suministro de litio. 
 Posee gran poder de negociación frente a OEMs automotrices y participa directamente en la cadena de suministro de minerales críticos (litio, níquel, cobalto), reduciendo la volatilidad de costos y mayor resiliencia ante shocks de commodities.
 
-Riesgos claves: alta exposición a China. Tensiones China–EE.UU. pueden afectar acceso a mercados o tecnología. Riesgo regulatorio de concentración de clientes dependencia significativa de grandes OEMs, presión sobre márgenes por poder negociador de fabricantes automotrices, posible disrupción por baterías de estado sólido u otras químicas emergentes y riesgo de commodities Volatilidad en precios de litio y níquel, aunque mitigado parcialmente por integración vertical.
-El conflicto en la region del oeste asiatico incrementa el riesgo por la dependencia China del suministro de recursos energeticos, y asi mismo, podría tener impacto en la transición a energias verdes, aumentando la volatilidad de CATL.
+Riesgos claves: alta exposición a China. Tensiones China–EE.UU. pueden afectar acceso a mercados o tecnología. Riesgo regulatorio de concentración de clientes con dependencia significativa de grandes OEMs, presión sobre márgenes por poder negociador de fabricantes automotrices, posible disrupción por baterías de estado sólido u otras químicas emergentes y riesgo de commodities, volatilidad en precios de litio y níquel, aunque mitigado parcialmente por integración vertical.
+El conflicto en la region del oeste asiatico incrementa el riesgo por la dependencia China del suministro de recursos energeticos, y asi mismo, podría tener impacto en la transición a energias verdes, aumentando la volatilidad de CATL, con un riesgo valorado positivamente.
 
-Posicionamiento Estratégico: CATL no es solo un fabricante de baterías; es un activo estratégico dentro de la infraestructura de electrificación global. Su liderazgo en cuota de mercado (~37%) le otorga: Ventaja en costos, capacidad de inversión en I+D y crea barreras de entrada significativas a nuevos entrantes.</p>
+Posicionamiento Estratégico: CATL no es solo un fabricante de baterías; es un activo estratégico dentro de la infraestructura de electrificación global. Su liderazgo en cuota de mercado (~37%) le otorga: ventaja en costos, capacidad de inversión en I+D y crea barreras de entrada significativas a nuevos entrantes.</p>
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -494,6 +494,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
