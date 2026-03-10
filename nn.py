@@ -55,7 +55,7 @@ st.markdown("""
     .watermark {
         position: fixed;
         bottom: 25px;
-        right: 30px;
+        right: 25px;
         opacity: 0.12; /* Nivel de transparencia profesional */
         z-index: 9999;
         pointer-events: none; /* Permite hacer clic a través del texto */
@@ -521,6 +521,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
