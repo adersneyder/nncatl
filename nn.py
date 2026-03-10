@@ -321,9 +321,9 @@ Posicionamiento Estratégico: CATL no es solo un fabricante de baterías; es un 
             <h3>3. Riesgos Geopolíticos</h3>
             <ul><li><strong>El conflicto abierto entre EE.UU., Israel e Irán representa un riesgo bidireccional para CATL. <strong>
             
-            Amenazas: disrupción en rutas marítimas críticas y encarecimiento drástico de los fletes globales, afectando la estructura de costos operativos. <strong>
+            <ul><li><strong>Amenazas: disrupción en rutas marítimas críticas y encarecimiento drástico de los fletes globales, afectando la estructura de costos operativos. <strong>
             
-            Oportunidades: un shock petrolero aceleraría la transición forzosa hacia la movilidad eléctrica, disparando la demanda de sus baterías. Para mitigar la vulnerabilidad de la cadena de suministro en África y Medio Oriente, CATL deberá estrechar urgentemente lazos estratégicos con proveedores de minerales en el Triángulo del Litio y latitudes americanas, garantizando un abastecimiento resiliente.</li></ul> <strong>
+            <ul><li><strong>Oportunidades: un shock petrolero aceleraría la transición forzosa hacia la movilidad eléctrica, disparando la demanda de sus baterías. Para mitigar la vulnerabilidad de la cadena de suministro en África y Medio Oriente, CATL deberá estrechar urgentemente lazos estratégicos con proveedores de minerales en el Triángulo del Litio y latitudes americanas, garantizando un abastecimiento resiliente.</li></ul> <strong>
         
         </div>
         """, unsafe_allow_html=True)
@@ -500,6 +500,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
