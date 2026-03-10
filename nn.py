@@ -288,25 +288,24 @@ df_catl_tech = apply_technicals(df_catl)
 # 3. INTERFAZ Y HEADER
 # ==========================================
 change_class = "green-text" if cur_change >= 0 else "red-text"
-logo_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/CATL_logo.svg/512px-CATL_logo.svg.png"
 
 st.markdown(f"""
 <div class="header-container">
-    <div class="logo-container">
-        <img src="{logo_url}" class="company-logo" alt="CATL Logo">
-    </div>
     <div>
-        <h1>Análisis Cuantitativo y de Riesgo: CATL</h1>
-        <p class="muted-text">Ticker Analizado: 300750.SZ | Índice: CSI 300</p>
-        <p style="font-size: 20px; font-weight: bold;">Precio Actual: ¥{cur_price:.2f} | 
-           Variación: <span class="{change_class}">{cur_change:.2f}%</span></p>
-        <div style="margin-top: 10px;">
-            <span class="status-badge" style="font-size: 14px;">Cotización: {data_source}</span>
-            <span class="status-badge" style="font-size: 14px; background-color: var(--accent-blue);">Fundamentales: {fund_source}</span>
+        <h1 style="margin-bottom: 5px;">Análisis Cuantitativo y de Riesgo: CATL</h1>
+        <p class="muted-text" style="font-size: 16px;">Ticker Analizado: 300750.SZ | Índice Benchmark: CSI 300</p>
+        <p style="font-size: 22px; font-weight: 600; margin-top: 15px;">
+            Precio Actual: ¥{cur_price:.2f} &nbsp;|&nbsp; 
+            Variación: <span class="{change_class}">{cur_change:.2f}%</span>
+        </p>
+        <div style="margin-top: 15px;">
+            <span class="status-badge" style="font-size: 13px;">Cotización: {data_source}</span>
+            <span class="status-badge" style="font-size: 13px; background-color: var(--accent-blue); margin-left: 10px;">Fundamentales: {fund_source}</span>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
+
 # ==========================================
 # 4. PANELES DE CONTENIDO (4 TABS NUEVOS)
 # ==========================================
@@ -522,6 +521,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
