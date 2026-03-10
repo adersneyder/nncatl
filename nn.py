@@ -117,7 +117,7 @@ if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
     def procesar_respuesta(es_correcta):
         if es_correcta:
             # Mostramos la cara feliz gigante
-            espacio_mensaje.markdown("<h1 style='text-align: center; font-size: 100px;'>😌👑 SIIIIIIU!</h1>", unsafe_allow_html=True)
+            espacio_mensaje.markdown("<h1 style='text-align: center; font-size: 100px;'>👑 SIIIIIIU! 😏</h1>", unsafe_allow_html=True)
             time.sleep(2) # Espera segundo
             espacio_mensaje.empty() # Borra la cara feliz
             st.session_state.quiz_aprobado = True
@@ -141,6 +141,8 @@ if st.session_state.indicaciones_leidas and not st.session_state.quiz_aprobado:
         if st.button("c. Real Madrid", use_container_width=True): procesar_respuesta(True)
     with col_d:
         if st.button("d. Bayern", use_container_width=True): procesar_respuesta(False)
+    with col_a:
+        if st.button("e. Manchester", use_container_width=True): procesar_respuesta(False)
 
     st.stop() # Detiene la ejecución hasta que responda bien
     
@@ -494,6 +496,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
