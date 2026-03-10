@@ -18,39 +18,61 @@ st.set_page_config(layout="wide", page_title="Terminal Análisis CATL (300750.SZ
 st.markdown("""
 <style>
     :root {
-        --bg-dark: #0d1117;
-        --panel-bg: #161b22;
-        --text-main: #c9d1d9;
-        --text-muted: #8b949e;
-        --accent-blue: #58a6ff;
-        --accent-green: #3fb950;
-        --accent-red: #f85149;
-        --border-color: #30363d;
+        --bg-dark: #0f172a; /* Azul pizarra corporativo oscuro */
+        --panel-bg: #1e293b; /* Panel gris azulado elegante */
+        --text-main: #f8fafc; /* Blanco humo nítido */
+        --text-muted: #94a3b8; /* Gris tenue para datos secundarios */
+        --accent-blue: #3b82f6; /* Azul institucional */
+        --accent-green: #10b981; /* Verde esmeralda (alcista) */
+        --accent-red: #ef4444; /* Rojo vibrante (bajista) */
+        --border-color: #334155; /* Bordes sutiles */
     }
-    .stApp { background-color: var(--bg-dark); color: var(--text-main); }
+    .stApp { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     div.stExpander, div.css-1r6slb0, div.block-container { color: var(--text-main); }
     .custom-panel {
         background-color: var(--panel-bg); border: 1px solid var(--border-color);
-        border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        border-radius: 6px; padding: 24px; margin-bottom: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    .header-container { padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
-    h1, h2, h3 { color: #ffffff !important; font-weight: 600; }
-    .metric-value { font-size: 28px; font-weight: bold; margin: 10px 0; }
+    .header-container { padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
+    h1, h2, h3, h4 { color: #ffffff !important; font-weight: 500; letter-spacing: -0.5px; margin-bottom: 16px; }
+    .metric-value { font-size: 32px; font-weight: 700; margin: 10px 0; letter-spacing: -1px; }
     .green-text { color: var(--accent-green); }
     .red-text { color: var(--accent-red); }
     .blue-text { color: var(--accent-blue); }
     .muted-text { color: var(--text-muted); font-size: 14px;}
     .status-badge {
-        display: inline-block; padding: 5px 10px; border-radius: 20px; 
-        font-size: 12px; font-weight: bold; background-color: var(--accent-green); color: #fff;
+        display: inline-block; padding: 4px 12px; border-radius: 4px; 
+        font-size: 12px; font-weight: 600; background-color: var(--accent-green); color: #fff; letter-spacing: 0.5px;
     }
     .verdict-panel {
-        text-align: center; padding: 30px; background: linear-gradient(145deg, #161b22, #0d1117); 
-        border: 2px solid var(--border-color); border-radius: 12px;
+        text-align: center; padding: 40px; background: linear-gradient(145deg, #1e293b, #0f172a); 
+        border: 1px solid var(--border-color); border-radius: 6px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
-    #verdict-result { font-size: 48px; font-weight: bold; text-transform: uppercase; margin: 15px 0; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+    #verdict-result { font-size: 42px; font-weight: 800; text-transform: uppercase; margin: 20px 0; letter-spacing: 2px; }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
+    
+    /* ESTILOS DE LA MARCA DE AGUA */
+    .watermark {
+        position: fixed;
+        bottom: 25px;
+        right: 30px;
+        opacity: 0.12; /* Nivel de transparencia profesional */
+        z-index: 9999;
+        pointer-events: none; /* Permite hacer clic a través del texto */
+        text-align: right;
+        font-size: 20px;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.3;
+        letter-spacing: 1px;
+    }
 </style>
+
+<div class="watermark">
+    Dirección Financiera - UNIE<br>
+    Sneyder Papamija Esterling
+</div>
+
 """, unsafe_allow_html=True)
 
 # ==========================================
@@ -499,6 +521,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
