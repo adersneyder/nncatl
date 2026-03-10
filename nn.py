@@ -61,7 +61,7 @@ st.markdown("""
         z-index: 9999;
         pointer-events: none; /* Crucial: permite interactuar con la app a través del texto */
         text-align: center;
-        font-size: 60px; /* Letra más grande al estar en el centro */
+        font-size: 40px; /* Letra más grande al estar en el centro */
         font-weight: 800;
         color: #ffffff;
         line-height: 1.2;
@@ -522,6 +522,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
