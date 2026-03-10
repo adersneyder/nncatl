@@ -51,28 +51,29 @@ st.markdown("""
     #verdict-result { font-size: 42px; font-weight: 800; text-transform: uppercase; margin: 20px 0; letter-spacing: 2px; }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;} header {visibility: hidden;}
     
-    /* ESTILOS DE LA MARCA DE AGUA */
+/* ESTILOS DE LA MARCA DE AGUA (CENTRADA) */
     .watermark {
         position: fixed;
-        bottom: 25px;
-        right: 25px;
-        opacity: 0.12; /* Nivel de transparencia profesional */
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-30deg); /* Centrada y con inclinación profesional */
+        opacity: 0.05; /* Transparencia muy baja para no bloquear el panel de control */
         z-index: 9999;
-        pointer-events: none; /* Permite hacer clic a través del texto */
+        pointer-events: none; /* Crucial: permite interactuar con la app a través del texto */
         text-align: center;
-        font-size: 20px;
+        font-size: 80px; /* Letra más grande al estar en el centro */
         font-weight: 800;
         color: #ffffff;
-        line-height: 1.3;
-        letter-spacing: 1px;
+        line-height: 1.2;
+        letter-spacing: 2px;
+        white-space: nowrap; /* Mantiene el texto en su formato original */
     }
 </style>
 
 <div class="watermark">
-    Dirección Financiera - UNIE<br>
+    D. Financiera - UNIE<br>
     Sneyder Papamija Esterling
 </div>
-
 """, unsafe_allow_html=True)
 
 # ==========================================
@@ -521,6 +522,7 @@ with tab5:
     
     df_n_catl = (df_catl['Close'].iloc[-365:] / df_catl['Close'].iloc[-365]) * 100
     df_n_mkt = (df_mkt['Close'].iloc[-365:] / df_mkt['Close'].iloc[-365]) * 100
+
 
 
 
